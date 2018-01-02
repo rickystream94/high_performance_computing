@@ -1,0 +1,18 @@
+CC = gcc
+OBJECTS = main.o data.o io.o
+OPT = -g -O3
+WARN = -Wall
+CFLAGS = $(OPT) $(WARN)
+COMPILE = $(CC) -c $(CFLAGS)
+
+excer2: $(OBJECTS)
+	$(CC) $(OBJECTS) $(CFLAGS) -o excer2
+	echo "Done."
+clean:
+	rm -f *.o
+io.o:
+	$(COMPILE) io.c
+data.o:
+	$(COMPILE) data.c
+main.o:
+	$(COMPILE) main.c

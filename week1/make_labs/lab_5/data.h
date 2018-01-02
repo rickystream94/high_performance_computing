@@ -1,2 +1,3 @@
 /* data.h */
-void data(void);
+#define M_PI 3.14
+#include <math.h>

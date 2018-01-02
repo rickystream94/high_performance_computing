@@ -1,11 +1,12 @@
 CC	= gcc
 DEBUG	= -g
 OPT	= -O3
+MATH	= -lm
 CFLAGS	= $(DEBUG) $(OPT)
 OBJECTS = data.o main.o io.o
 
 project1: $(OBJECTS)
-	cc -o $@ $(OBJECTS) 
+	$(CC) $(MATH) -o $@ $(OBJECTS)
 
 data.o: data.c data.h
 main.o: data.h io.h main.c

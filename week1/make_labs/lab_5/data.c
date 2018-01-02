@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include "data.h"
-
-void 
-data(void) { 
+void data(void);
+void data(void) { 
     double x, y;
     int i;
 
