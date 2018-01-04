@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cblas.h>
-#include "matmult.h"
+#include "matmult.c"
 
 void init_random_matrix(int m, int n, double **mat);
 void print_matrix(int m, int n, double **mat);
@@ -29,7 +29,7 @@ int main(void)
     printf("Matrix B:\n");
     print_matrix(k, n, B);
     printf("Performing matmult...\n");
-    C = matmult_nat(m, n, k, A, B, C);
+    matmult_nat(m, n, k, A, B, C);
 
     //cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, 1, A, m, B, k, 0, C_dgemm, m);
 

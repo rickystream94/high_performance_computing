@@ -1,16 +1,24 @@
-CC = gcc
-DEBUG = -g
-OPT =  -O3
-ATLAS = -L /usr/lib64/atlas -lsatlas
-CFLAGS = $(DEBUG) $(OPT)
-COMPILE = $(CC) $(CFLAGS) $(ATLAS)
-OBJECTS = check.o
+TARGET	= libmatmult.so
+LIBSRCS	= 
+LIBOBJS	= matmult.o
 
-project: $(OBJECTS)
-	$(COMPILE) $(OBJECTS) $(CFLAGS) -o project
+CC = gcc
+OPT =  -g -O3
+PIC	= -fPIC
+ATLAS = -L /usr/lib64/atlas -lsatlas
+CFLAGS = $(OPT) $(PIC) $(XOPTS)
+
+SOFLAGS = -shared 
+XLIBS = 
+
+COMPILE = $(CC) -o $@  $(LIBOBJS) $(SOFLAGS) $(CFLAGS) $(ATLAS) $(XLIBS)
+
+$(TARGET): $(LIBOBJS)
+	$(COMPILE)
 
 clean:
 	rm -f *.o
 
-check.o: check.c matmult.h
+matmult.o: matmult.c
+	$(CC) -c $(CFLAGS) $< -o $@
 

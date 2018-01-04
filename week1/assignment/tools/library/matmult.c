@@ -1,28 +1,30 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 // Function prototypes
-double **matmult_nat(int m, int n, int k, double **A, double **B, double **C);
-double **matmult_lib(int m, int n, int k, double **A, double **B, double **C);
-void init_matrix(int m, int n, double **mat);
+void matmult_nat(int m, int n, int k, double **A, double **B, double **C);
+//double **matmult_lib(int m, int n, int k, double **A, double **B, double **C);
 double **malloc_2d(int m, int n);
-void init_matrix(int m, int n, double **mat);
 
-double **matmult_nat(int m, int n, int k, double **A, double **B, double **C)
+void matmult_nat(int m, int n, int k, double **A, double **B, double **C)
 {
+	printf("--- Executing matmult_nat with m = %d, n = %d, k = %d ---\n", m, n, k);
+	printf("Allocating memory for C\n");
 	// Allocate memory for C
 	C = malloc_2d(m, n);
 
-	// Initialize C to zero
-	init_matrix(m, n, C);
-
 	// Perform multiplication A*B
+	printf("Performing multiplication\n");
 	int i, j, t, q;
 	for (i = 0; i < m; i++)
-		for (j = 0; j < n; j++)
+		for (j = 0; j < n; j++) {
+			C[i][j] = 0.0;
+			//printf("i = %d, j = %d\n", i,j);
 			for (q = 0, t = 0; t < k && q < k; t++, q++)
 				C[i][j] += A[i][q] * B[t][j];
+		}
 
-	return C;
+	printf("Done!\n");
 }
 
 /*double **
@@ -51,12 +53,4 @@ double **malloc_2d(int m, int n)
 	for (i = 1; i < m; i++)
 		A[i] = A[0] + i * n;
 	return A;
-}
-
-void init_matrix(int m, int n, double **mat)
-{
-	int i, j;
-	for (i = 0; i < m; i++)
-		for (j = 0; j < n; j++)
-			mat[i][j] = 0.0;
 }
