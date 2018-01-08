@@ -12,8 +12,10 @@ void matmult_knm(int m, int n, int k, double **A, double **B, double **C);
 void matmult_mkn(int m, int n, int k, double **A, double **B, double **C);
 void matmult_nkm(int m, int n, int k, double **A, double **B, double **C);
 void matmult_lib(int m, int n, int k, double **A, double **B, double **C);
+void matmult_blk(int m, int n, int k, double **A, double **B, double **C, int bs);
 double **malloc_2d(int m, int n);
 void print_matrix(int m, int n, double **mat);
+int min(int a, int b);
 
 void matmult_nat(int m, int n, int k, double **A, double **B, double **C)
 {
@@ -146,6 +148,27 @@ void matmult_lib(int m, int n, int k, double **A, double **B, double **C)
 	cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, k, 1, A[0], k, B[0], n, 0, C[0], n);
 }
 
+void matmult_blk(int m, int n, int k, double **A, double **B, double **C, int bs)
+{
+	if (bs >= m || bs >= n || bs >= n)
+	{
+		matmult_nat(m, n, k, A, B, C);
+		return;
+	}
+	// Initializing C
+	int i, j, q, qq, jj;
+	for (i = 0; i < m; i++)
+		for (j = 0; j < n; j++)
+			C[i][j] = 0.0;
+
+	for (q = 0; q < k; q += bs)
+		for (j = 0; j < n; j += bs)
+			for (i = 0; i < m; ++i)
+				for (qq = q; qq < min(q + bs, k); ++qq)
+					for (jj = j; jj < min(j + bs, n); ++jj)
+						C[i][jj] += A[i][qq] * B[qq][jj];
+}
+
 double **malloc_2d(int m, int n)
 {
 	int i;
@@ -183,4 +206,9 @@ void print_matrix(int m, int n, double **mat)
 		}
 		printf("\n");
 	}
+}
+
+int min(int a, int b)
+{
+	return a < b ? a : b;
 }
