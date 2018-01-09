@@ -10,7 +10,7 @@ void mandel(int disp_width, int disp_height, int *array, int max_iter)
 
 	#pragma omp parallel private (i,j,iter)
 	{
-		#pragma omp for
+		#pragma omp for schedule(dynamic, 100)
 		for (i = 0; i < disp_width; i++)
 		{
 

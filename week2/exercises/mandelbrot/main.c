@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
     mandel(width, height, image, max_iter);
     te = omp_get_wtime() - ts;
 
-    writepng("mandelbrot.png", image, width, height);
+    // Commented out for experiment purposes
+    //writepng("mandelbrot.png", image, width, height);
 
     printf("%f\n", te);
 
