@@ -12,9 +12,17 @@
 #       export OMP_NUM_THREADS=$LSB_DJOB_NUMPROC
 #
 #BSUB -J collector
+#BSUB -o collector_%J.out
+#BSUB -e collector_%J.err
 #BSUB -q hpcintro
 #BSUB -n 4
 #BSUB -W 15
+
+### -- Ask for number of hosts (nodes) --
+#BSUB -R "span[hosts=1]"
+
+### -- Specify memory usage --
+#BSUB -R "rusage[mem=512MB]"
 
 
 module load studio
