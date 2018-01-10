@@ -1,0 +1,20 @@
+TARGET	= poisson
+OBJS	= main.o matrixlib.o jacobi.o
+
+OPT	= -g -fast -lm ### -xopenmp
+CCC	= CC
+CFLAGS	= $(OPT) -Wall
+DEPS = jacobi.h matrixlib.h
+
+$(TARGET): $(OBJS) 
+	$(CCC) $(CFLAGS) -o $@ $^
+
+clean:
+	@/bin/rm -f *.o core*
+
+realclean: clean
+	@rm -f $(TARGET)
+
+# dependencies
+%.o: %.c $(DEPS)
+	$(CCC) -c $(CFLAGS) $< -o $@
