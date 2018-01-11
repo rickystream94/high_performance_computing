@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdio.h>
+#include <omp.h>
 #include "matrixlib.h"
 /*------------------------------------------------- gauss_seidel_iter -----
          |  Function gauss_seidel_iter
@@ -22,7 +23,10 @@
 double *gauss_seidel_iter(int m, int n, double *mat, double threshold, int k_max, double *f, double delta)
 {
     int k, i, j;
-    double sum = 0.0, diff, d, d_start = 1000000.0, temp;
+    double sum = 0.0, diff, d, d_start = 1000000.0, temp, ts, te, iter_sec;
+
+    // Get starting time
+    ts = omp_get_wtime();
 
     // Start iteration
     for (k = 0, d = d_start; k < k_max && d > threshold; k++)
@@ -52,6 +56,13 @@ double *gauss_seidel_iter(int m, int n, double *mat, double threshold, int k_max
         // d is calculated as the Frobenius norm
         d = sqrt(sum);
     }
+
+    // Get time
+    te = omp_get_wtime() - ts;
+
+    // Calculate number of iterations/sec
+    iter_sec = (double)(k) / te;
+    printf("%f\n", iter_sec);
 
     // When breaking the loop, according to the last pointer swap, the latest updated data is pointed by mat_old!
     return mat;

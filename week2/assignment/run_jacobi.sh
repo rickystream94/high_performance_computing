@@ -17,4 +17,14 @@ module load studio
 #
 EXECUTABLE=poisson
 
-./$EXECUTABLE $(cat input.in)
+SIZES=["10 15 20 25 30 40 50 60 80 100"]
+K="1000000"
+d="0.000001"
+TYPE="jacobi"
+
+for n in $SIZES
+do
+    ./$EXECUTABLE $TYPE $n $K $d
+done
+
+### ./$EXECUTABLE $(cat input.in) ### Use this version if you want to read arguments from command line

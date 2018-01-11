@@ -47,18 +47,18 @@ int main(int argc, char *argv[])
     // 4. call iterator (Jacobi or Gauss-Seidel)
     if (strcmp(type, GAUSS_SEIDEL) == 0)
     {
-        printf("Gauss-Seidel: N = %d, k_max = %d, d = %f\n", N, k_max, d);
+        //printf("Gauss-Seidel: N = %d, k_max = %d, d = %f\n", N, k_max, d);
         U = gauss_seidel_iter(NN, NN, U, d, k_max, f, delta);
     }
     else if (strcmp(type, JACOBI) == 0)
     {
-        printf("Jacobi: N = %d, k_max = %d, d = %f\n", N, k_max, d);
+        //printf("Jacobi: N = %d, k_max = %d, d = %f\n", N, k_max, d);
         U = jacobi_iter(NN, NN, U, d, k_max, f, delta);
     }
     else
         printf("Error: invalid iteration type!\n");
 
-    print_matrix(NN, NN, U);
+    //print_matrix(NN, NN, U);
 
     // 5. print results, e.g. timings, data, etc
 

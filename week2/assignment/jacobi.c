@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdio.h>
+#include <omp.h>
 #include "matrixlib.h"
 /*------------------------------------------------- jacobi_iter -----
          |  Function jacobi_iter
@@ -22,7 +23,7 @@
 double *jacobi_iter(int m, int n, double *mat, double threshold, int k_max, double *f, double delta)
 {
     int k, i, j;
-    double sum = 0.0, diff, d;
+    double sum = 0.0, diff, d, ts, te, iter_sec;
     double *mat_new, *mat_old, *temp_ptr;
     double d_start = 1000000.0;
 
@@ -32,6 +33,9 @@ double *jacobi_iter(int m, int n, double *mat, double threshold, int k_max, doub
 
     // Assign mat_old with the initial guess (k = 0 iteration)
     mat_old = mat;
+
+    // Get starting time
+    ts = omp_get_wtime();
 
     // Start iteration
     for (k = 0, d = d_start; k < k_max && d > threshold; k++)
@@ -66,6 +70,13 @@ double *jacobi_iter(int m, int n, double *mat, double threshold, int k_max, doub
         mat_old = mat_new;
         mat_new = temp_ptr;
     }
+
+    // Get time
+    te = omp_get_wtime() - ts;
+
+    // Calculate number of iterations/sec
+    iter_sec = (double)(k) / te;
+    printf("%f\n", iter_sec);
 
     // When breaking the loop, according to the last pointer swap, the latest updated data is pointed by mat_old!
     return mat_old;
