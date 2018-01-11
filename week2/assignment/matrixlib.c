@@ -7,16 +7,16 @@ void init_U_matrix(int m, int n, double *mat)
     for (i = 0; i < m; i++)
     {
         value_set = 0;
-        // i == 0   --> TOP (POSITIVE) BORDER
-        // i == m-1 --> BOTTOM (NEGATIVE) BORDER
+        // i == 0   --> BOTTOM (NEGATIVE) BORDER
+        // i == m-1 --> TOP (POSITIVE) BORDER
         if (i == 0)
         {
-            init_value = 20.0;
+            init_value = 0.0;
             value_set = 1;
         }
         else if (i == m - 1)
         {
-            init_value = 0.0;
+            init_value = 20.0;
             value_set = 1;
         }
         else

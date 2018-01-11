@@ -1,0 +1,8 @@
+Instructions about how to launch the program:
+1) make
+2) poisson {type} {N} {k} {d}
+where:
+- type: gau / jac
+- N: number of INNER grid points (excluding boundaries)
+- k: max number of iterations
+- d: threshold
