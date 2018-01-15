@@ -58,9 +58,8 @@ int main(int argc, char *argv[])
     else
         printf("Error: invalid iteration type!\n");
 
-    //print_matrix(NN, NN, U);
-
     // 5. print results, e.g. timings, data, etc
+    //print_matrix(NN, NN, U);
 
     // 6. de-allocate memory
     free(U);

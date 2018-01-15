@@ -3,22 +3,7 @@
 #include <omp.h>
 #include "matrixlib.h"
 /*------------------------------------------------- jacobi_iter -----
-         |  Function jacobi_iter
-         |
-         |  Purpose:  EXPLAIN WHAT THIS FUNCTION DOES TO SUPPORT THE CORRECT
-         |      OPERATION OF THE PROGRAM, AND HOW IT DOES IT.
-         |
-         |  Parameters:
-         |      parameter_name (IN, OUT, or IN/OUT) -- EXPLANATION OF THE
-         |              PURPOSE OF THIS PARAMETER TO THE FUNCTION.
-         |                      (REPEAT THIS FOR ALL FORMAL PARAMETERS OF
-         |                       THIS FUNCTION.
-         |                       IN = USED TO PASS DATA INTO THIS FUNCTION,
-         |                       OUT = USED TO PASS DATA OUT OF THIS FUNCTION
-         |                       IN/OUT = USED FOR BOTH PURPOSES.)
-         |
-         |  Returns:  IF THIS FUNCTION SENDS BACK A VALUE VIA THE RETURN
-         |      MECHANISM, DESCRIBE THE PURPOSE OF THAT VALUE HERE.
+         |  Function jacobi_iter: PARALLELIZED VERSION: no extended parallel region (BASELINE)
          *-------------------------------------------------------------------*/
 double *jacobi_iter(int m, int n, double *mat, double threshold, int k_max, double *f, double delta)
 {
@@ -40,7 +25,10 @@ double *jacobi_iter(int m, int n, double *mat, double threshold, int k_max, doub
     // Start iteration
     for (k = 0, d = d_start; k < k_max && d > threshold; k++)
     {
-        for (i = 0, sum = 0.0; i < m; i++)
+        sum = 0.0;
+        #pragma omp parallel for default(none) shared(m, n, mat_old, mat_new, threshold, f, delta, temp_ptr) private(j, i, diff, d) reduction(+ \
+                                                                                                                                      : sum)
+        for (i = 0; i < m; i++)
         {
             for (j = 0; j < n; j++)
             {
@@ -55,7 +43,7 @@ double *jacobi_iter(int m, int n, double *mat, double threshold, int k_max, doub
                     // No need to include this step also for the boundary points, since diff will always be 0!
                     // sum will increase only when updating non-boundary points
                     diff = mat_old[i * m + j] - mat_new[i * m + j];
-                    sum += pow(diff, 2);
+                    sum += diff * diff; //pow(diff, 2);
                 }
             }
         } /* end of point approximization */
@@ -66,17 +54,20 @@ double *jacobi_iter(int m, int n, double *mat, double threshold, int k_max, doub
 
         // Swap the pointers
         // Note: mat_old now points to mat_new, and we can use the memory already allocated for mat_old to store mat_new at the next iteration (all the values will be overwritten anyway!)
-        temp_ptr = mat_old;
-        mat_old = mat_new;
-        mat_new = temp_ptr;
-    }
+        {
+            temp_ptr = mat_old;
+            mat_old = mat_new;
+            mat_new = temp_ptr;
+        } //Implicit barrier
+    }     /* end of iterations loop and of parallel */
 
     // Get time
     te = omp_get_wtime() - ts;
+    printf("%f\n", te);
 
     // Calculate number of iterations/sec
-    iter_sec = (double)(k) / te;
-    printf("%f\n", iter_sec);
+    //iter_sec = (double)(k) / te;
+    //printf("%f\n", iter_sec);
 
     // When breaking the loop, according to the last pointer swap, the latest updated data is pointed by mat_old!
     return mat_old;

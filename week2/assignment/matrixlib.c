@@ -1,9 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <omp.h>
 void init_U_matrix(int m, int n, double *mat)
 {
     int i, j, value_set;
     double init_value;
+    #pragma omp parallel for default(none) shared(mat, m, n) private(i, j, value_set, init_value)
     for (i = 0; i < m; i++)
     {
         value_set = 0;
@@ -44,10 +46,13 @@ void init_f_matrix(int m, int n, double *f, double delta)
     int i, j;
     double delta_i, delta_j, init_value;
     double x_min = 1.0, x_max = 4.0 / 3.0, y_min = 1.0 / 3.0, y_max = 2.0 / 3.0;
-    for (i = 0, delta_i = 0.0; i < m; i++)
+    #pragma omp parallel for default(none) shared(m, n, f, delta, x_min, x_max, y_min, y_max) private(i, j, init_value, delta_i, delta_j)
+    for (i = 0; i < m; i++)
     {
-        for (j = 0, delta_j = 0.0; j < n; j++)
+        delta_i = 0.0;
+        for (j = 0; j < n; j++)
         {
+            delta_j = 0.0;
             // Check if grid point falls inside function f where f = 200
             if (delta_j >= x_min && delta_j <= x_max && delta_i >= y_min && delta_i <= y_max)
                 init_value = 200.0;

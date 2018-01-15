@@ -2,24 +2,6 @@
 #include <stdio.h>
 #include <omp.h>
 #include "matrixlib.h"
-/*------------------------------------------------- gauss_seidel_iter -----
-         |  Function gauss_seidel_iter
-         |
-         |  Purpose:  EXPLAIN WHAT THIS FUNCTION DOES TO SUPPORT THE CORRECT
-         |      OPERATION OF THE PROGRAM, AND HOW IT DOES IT.
-         |
-         |  Parameters:
-         |      parameter_name (IN, OUT, or IN/OUT) -- EXPLANATION OF THE
-         |              PURPOSE OF THIS PARAMETER TO THE FUNCTION.
-         |                      (REPEAT THIS FOR ALL FORMAL PARAMETERS OF
-         |                       THIS FUNCTION.
-         |                       IN = USED TO PASS DATA INTO THIS FUNCTION,
-         |                       OUT = USED TO PASS DATA OUT OF THIS FUNCTION
-         |                       IN/OUT = USED FOR BOTH PURPOSES.)
-         |
-         |  Returns:  IF THIS FUNCTION SENDS BACK A VALUE VIA THE RETURN
-         |      MECHANISM, DESCRIBE THE PURPOSE OF THAT VALUE HERE.
-         *-------------------------------------------------------------------*/
 double *gauss_seidel_iter(int m, int n, double *mat, double threshold, int k_max, double *f, double delta)
 {
     int k, i, j;
@@ -61,8 +43,11 @@ double *gauss_seidel_iter(int m, int n, double *mat, double threshold, int k_max
     te = omp_get_wtime() - ts;
 
     // Calculate number of iterations/sec
-    iter_sec = (double)(k) / te;
-    printf("%f\n", iter_sec);
+    //iter_sec = (double)(k) / te;
+    //printf("%f\n", iter_sec);
+
+    // Print number of iterations (check convergence speed)
+    printf("%d\n", k);
 
     // When breaking the loop, according to the last pointer swap, the latest updated data is pointed by mat_old!
     return mat;

@@ -1,10 +1,10 @@
 TARGET	= poisson
 OBJS	= main.o matrixlib.o jacobi.o gauss_seidel.o
 
-OPT	= -g -fast -lm -xopenmp
+OPT	= -g -fast -lm -xopenmp -xvpara
 CCC	= CC
 CFLAGS	= $(OPT) -Wall
-DEPS = jacobi.h matrixlib.h
+DEPS = jacobi.h matrixlib.h gauss_seidel.h
 
 $(TARGET): $(OBJS) 
 	$(CCC) $(CFLAGS) -o $@ $^

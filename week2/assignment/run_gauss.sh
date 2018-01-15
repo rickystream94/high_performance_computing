@@ -1,3 +1,6 @@
+### Bash script used to collect output files needed to plot the solution of the algorithm
+### IMPORTANT: the C file should be adjusted such that it only prints the result matrix (main.c)
+
 #BSUB -J gauss
 #BSUB -o gauss_%J.out
 #BSUB -e gauss_%J.err
@@ -17,7 +20,7 @@ module load studio
 #
 EXECUTABLE=poisson
 
-SIZES=["10 15 20 25 30 40 50 60 80 100"]
+SIZES="15 20 25 30 40 50 60 80 100"
 K="1000000"
 d="0.000001"
 TYPE="gauss"
