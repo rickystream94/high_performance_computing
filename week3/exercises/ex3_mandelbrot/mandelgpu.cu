@@ -1,4 +1,5 @@
-__global__ void mandel(int disp_width, int disp_height, int *array, int max_iter)
+__global__
+void mandel(int disp_width, int disp_height, int *array, int max_iter)
 {
 
 	double scale_real, scale_imag;
@@ -9,8 +10,8 @@ __global__ void mandel(int disp_width, int disp_height, int *array, int max_iter
 	scale_imag = 3.5 / (double)disp_height;
 
 	// Get thread indexes
-	i = threadIdx.x;
-	j = threadIdx.y;
+	i = blockIdx.x * blockDim.x + threadIdx.x;
+	j = blockIdx.y * blockDim.y + threadIdx.y;
 
 	if (i >= disp_width || j >= disp_height)
 		return;
