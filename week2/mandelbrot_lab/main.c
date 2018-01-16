@@ -11,8 +11,8 @@ int main(int argc, char *argv[])
     int max_iter;
     int *image;
 
-    width = 2601;
-    height = 2601;
+    width = 4000;
+    height = 4000;
     max_iter = 400;
 
     // command line argument sets the dimensions of the image

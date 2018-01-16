@@ -1,0 +1,25 @@
+| ********* CPU ********* |
+CPUs         ---> 24 (2 sockets * 12 cores/socket)
+Clock rate   ---> 2.6 GHz
+L1 Cache     ---> 32K
+L2 Cache     ---> 1024K
+L3 Cache     ---> 19712K
+Total Memory ---> 188GB
+
+| ********* GPU ********* |
+CPUs         ---> 80 (64 CUDA cores /mp = 5120 total CUDA cores)
+Clock rate   ---> 1.38GHz
+L2 Cache     ---> 6.3K
+Total Memory ---> 16GB
+
+| ********** BANDWIDTH TESTS ********** |
+
+0. PINNED MEMORY
+- CPU --> GPU: 12021.5 MB/s
+- GPU --> CPU: 12867.9 MB/s
+- GPU <-> GPU: 741848.0 MB/s
+
+1. PAGEABLE MEMORY
+- CPU --> GPU: 4679.4 MB/s
+- GPU --> CPU: 4574.5 MB/s
+- GPU <-> GPU: 741891.9 MB/s
