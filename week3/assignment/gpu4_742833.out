@@ -1,0 +1,93 @@
+    58.594    661.486 # matmult_gpu4
+   234.375   4985.752 # matmult_gpu4
+   937.500  32102.116 # matmult_gpu4
+  2109.375  46307.543 # matmult_gpu4
+  5859.375 154416.603 # matmult_gpu4
+ 13183.594 298230.565 # matmult_gpu4
+ 23437.500 395440.946 # matmult_gpu4
+ 36621.094 524338.065 # matmult_gpu4
+ 52734.375 698944.978 # matmult_gpu4
+ 71777.344 780634.705 # matmult_gpu4
+ 93750.000 831213.580 # matmult_gpu4
+146484.375 935619.939 # matmult_gpu4
+210937.500 1130974.540 # matmult_gpu4
+287109.375 1258265.630 # matmult_gpu4
+375000.000 1188888.400 # matmult_gpu4
+474609.375 1321438.132 # matmult_gpu4
+585937.500 1462807.983 # matmult_gpu4
+708984.375 1526904.327 # matmult_gpu4
+843750.000 1517743.769 # matmult_gpu4
+1318359.375 1683954.544 # matmult_gpu4
+1500000.000 1761206.181 # matmult_gpu4
+1693359.375 1763102.594 # matmult_gpu4
+1898437.500 1761930.711 # matmult_gpu4
+2343750.000 1868714.524 # matmult_gpu4
+
+------------------------------------------------------------
+Sender: LSF System <lsfadmin@n-62-20-2>
+Subject: Job 742833: <gpu4> in cluster <dcc> Done
+
+Job <gpu4> was submitted from host <hpclogin3> by user <s161155> in cluster <dcc> at Fri Jan 19 14:57:08 2018.
+Job was executed on host(s) <4*n-62-20-2>, in queue <gpuv100>, as user <s161155> in cluster <dcc> at Fri Jan 19 14:57:10 2018.
+</zhome/aa/1/114117> was used as the home directory.
+</zhome/aa/1/114117/ricky/hpc/week3/assignment> was used as the working directory.
+Started at Fri Jan 19 14:57:10 2018.
+Terminated at Fri Jan 19 14:59:02 2018.
+Results reported at Fri Jan 19 14:59:02 2018.
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#BSUB -J gpu4
+#BSUB -o gpu4_%J.out
+#BSUB -e gpu4_%J.err
+#BSUB -q gpuv100
+#BSUB -gpu "num=1:mode=exclusive_process:mps=yes"
+#BSUB -n 4
+#BSUB -W 30
+
+### -- Ask for number of hosts (nodes) --
+#BSUB -R "span[hosts=1]"
+
+### -- Specify memory usage --
+#BSUB -R "rusage[mem=1024MB]"
+
+# define the executable here
+#
+module load cuda/9.1
+EXECUTABLE=matmult_f.nvcc
+
+SIZES="50 100 200 300 500 750 1000 1250 1500 1750 2000 2500 3000 3500 4000 4500 5000 5500 6000 7500 8000 8500 9000 10000"
+MAX_IT=100
+COMPARE=0
+
+for i in $SIZES
+do
+    MATMULT_COMPARE=$COMPARE ./$EXECUTABLE gpu4 $i $i $i
+done
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   143.87 sec.
+    Max Memory :                                 196 MB
+    Average Memory :                             151.00 MB
+    Total Requested Memory :                     4096.00 MB
+    Delta Memory :                               3900.00 MB
+    Max Swap :                                   -
+    Max Processes :                              4
+    Max Threads :                                7
+    Run time :                                   116 sec.
+    Turnaround time :                            114 sec.
+
+The output (if any) is above this job summary.
+
+
+
+PS:
+
+Read file <gpu4_742833.err> for stderr output of this job.
+

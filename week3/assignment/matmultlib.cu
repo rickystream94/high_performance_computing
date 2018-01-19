@@ -1,9 +1,14 @@
 extern "C" {
 #include <cblas.h>
 #include <math.h>
+#include <stdio.h>
 }
 #include "matmultgpu.h"
 #include <helper_cuda.h>
+#include <cuda_runtime.h>
+#include "cublas_v2.h"
+#define BLOCK_SIZE 16
+#define TILE_SIZE 4
 
 extern "C" {
 void matmult_nat(int m, int n, int k, double *A, double *B, double *C)
@@ -79,7 +84,7 @@ void matmult_gpu2(int m, int n, int k, double *h_A, double *h_B, double *h_C)
     cudaMemcpy(d_B, h_B, k * n * sizeof(double), cudaMemcpyHostToDevice);
 
     // Launch kernel
-    dim3 threads_per_block(16, 16); // e.g. 16*16 = 256 threads in total
+    dim3 threads_per_block(BLOCK_SIZE, BLOCK_SIZE); // e.g. 16*16 = 256 threads in total
     dim3 num_blocks(ceil((double)n/threads_per_block.y),ceil((double)m/threads_per_block.x));
     matmult_kernel_gpu2<<<num_blocks,threads_per_block>>>(d_A,d_B,d_C,m,n,k);
     checkCudaErrors(cudaDeviceSynchronize());
@@ -113,9 +118,124 @@ void matmult_gpu3(int m, int n, int k, double *h_A, double *h_B, double *h_C)
     cudaMemcpy(d_B, h_B, k * n * sizeof(double), cudaMemcpyHostToDevice);
 
     // Launch kernel
-    dim3 threads_per_block(16, 16); // e.g. 16*16 = 256 threads in total
-    dim3 num_blocks(ceil((double)n/(threads_per_block.x)),ceil((double)m/(threads_per_block.y*2)));
+    dim3 threads_per_block(BLOCK_SIZE, BLOCK_SIZE); // e.g. 16*16 = 256 threads in total
+    //dim3 num_blocks(ceil((double)n/(threads_per_block.x*2)),ceil((double)m/(threads_per_block.y))); // RIGHT NEIGHBOR VERSION
+    dim3 num_blocks(ceil((double)n/(threads_per_block.x)),ceil((double)m/(threads_per_block.y*2))); // BOTTOM NEIGHBOR VERSION
     matmult_kernel_gpu3<<<num_blocks,threads_per_block>>>(d_A,d_B,d_C,m,n,k);
+    checkCudaErrors(cudaDeviceSynchronize());
+
+    // Copy result back to host
+    cudaMemcpy(h_C, d_C, m * n * sizeof(double), cudaMemcpyDeviceToHost);
+
+    // Cleanup
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_C);
+}
+
+void matmult_gpu4(int m, int n, int k, double *h_A, double *h_B, double *h_C)
+{
+    double *d_A, *d_B, *d_C;
+
+    // Allocate memory on device
+    cudaMalloc((void **)&d_A, m * k * sizeof(double));
+    cudaMalloc((void **)&d_B, k * n * sizeof(double));
+    cudaMalloc((void **)&d_C, m * n * sizeof(double));
+
+    if (d_A == NULL || d_B == NULL || d_C == NULL)
+    {
+        fprintf(stderr, "memory allocation failed!\n");
+        return;
+    }
+
+    // Copy data from host to device
+    cudaMemcpy(d_A, h_A, m * k * sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, k * n * sizeof(double), cudaMemcpyHostToDevice);
+
+    // Launch kernel
+    dim3 threads_per_block(BLOCK_SIZE, BLOCK_SIZE); // e.g. 16*16 = 256 threads in total
+    dim3 num_blocks(ceil((double)n/(threads_per_block.x)),ceil((double)m/(threads_per_block.y*TILE_SIZE)));
+    matmult_kernel_gpu4<<<num_blocks,threads_per_block>>>(d_A,d_B,d_C,m,n,k);
+    checkCudaErrors(cudaDeviceSynchronize());
+
+    // Copy result back to host
+    cudaMemcpy(h_C, d_C, m * n * sizeof(double), cudaMemcpyDeviceToHost);
+
+    // Cleanup
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_C);
+}
+
+void matmult_gpu5(int m, int n, int k, double *h_A, double *h_B, double *h_C)
+{
+    double *d_A, *d_B, *d_C;
+
+    // Allocate memory on device
+    cudaMalloc((void **)&d_A, m * k * sizeof(double));
+    cudaMalloc((void **)&d_B, k * n * sizeof(double));
+    cudaMalloc((void **)&d_C, m * n * sizeof(double));
+
+    if (d_A == NULL || d_B == NULL || d_C == NULL)
+    {
+        fprintf(stderr, "memory allocation failed!\n");
+        return;
+    }
+
+    // Copy data from host to device
+    cudaMemcpy(d_A, h_A, m * k * sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, k * n * sizeof(double), cudaMemcpyHostToDevice);
+
+    // Launch kernel
+    dim3 threads_per_block(BLOCK_SIZE, BLOCK_SIZE); // e.g. 16*16 = 256 threads in total
+    dim3 num_blocks(n/threads_per_block.x,m/threads_per_block.y);
+    matmult_kernel_gpu5<<<num_blocks,threads_per_block>>>(d_A,d_B,d_C,m,n,k);
+    checkCudaErrors(cudaDeviceSynchronize());
+
+    // Copy result back to host
+    cudaMemcpy(h_C, d_C, m * n * sizeof(double), cudaMemcpyDeviceToHost);
+
+    // Cleanup
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_C);
+}
+
+void matmult_gpulib(int m, int n, int k, double *h_A, double *h_B, double *h_C)
+{
+    const double alpha = 1.0, beta = 0.0;
+    double *d_A, *d_B, *d_C;
+
+    // Allocate memory on device
+    cudaMalloc((void **)&d_A, m * k * sizeof(double));
+    cudaMalloc((void **)&d_B, k * n * sizeof(double));
+    cudaMalloc((void **)&d_C, m * n * sizeof(double));
+
+    if (d_A == NULL || d_B == NULL || d_C == NULL)
+    {
+        fprintf(stderr, "memory allocation failed!\n");
+        return;
+    }
+
+    // Copy data from host to device
+    cudaMemcpy(d_A, h_A, m * k * sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, k * n * sizeof(double), cudaMemcpyHostToDevice);
+
+
+    // Create handle for CUBLAS
+    cublasHandle_t handle;
+    if(cublasCreate(&handle)!=CUBLAS_STATUS_SUCCESS)
+    {
+        printf("Error initializing CUDA runtime.\n");
+        return;
+    }
+    
+    // Kernel invocation
+    cublasDgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, n, m, k, &alpha, d_B, n, d_A, k, &beta, d_C, n);
+
+    // Destroy handle
+    cublasDestroy(handle);
+
     checkCudaErrors(cudaDeviceSynchronize());
 
     // Copy result back to host
